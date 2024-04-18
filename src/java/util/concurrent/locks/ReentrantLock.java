@@ -129,13 +129,16 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         final boolean nonfairTryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
+            // state == 0 ，表示锁没有被线程持有
             if (c == 0) {
+                // 直接通过 CAS 修改，能修改成功的就获取锁。
                 if (compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
-            else if (current == getExclusiveOwnerThread()) {
+            else if (current == getExclusiveOwnerThread()) { // 判断 exclusiveOwnerThread 是不是当前线程
+                // state + 1  state 表示重入次数
                 int nextc = c + acquires;
                 if (nextc < 0) // overflow
                     throw new Error("Maximum lock count exceeded");
@@ -146,14 +149,17 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         }
 
         protected final boolean tryRelease(int releases) {
+            // state - releases
             int c = getState() - releases;
+            // 判断当前线程是否为持有锁的线程
             if (Thread.currentThread() != getExclusiveOwnerThread())
                 throw new IllegalMonitorStateException();
             boolean free = false;
-            if (c == 0) {
+            if (c == 0) { // state 为 0 时，释放锁
                 free = true;
                 setExclusiveOwnerThread(null);
             }
+            // 设置 state
             setState(c);
             return free;
         }
@@ -203,10 +209,14 @@ public class ReentrantLock implements Lock, java.io.Serializable {
          * acquire on failure.
          */
         final void lock() {
+            // 非公平锁，尝试直接将 state 从 0 改为 1 成功则获取锁
             if (compareAndSetState(0, 1))
+                // 将 AQS 中的 exclusiveOwnerThread 设置为当前线程
                 setExclusiveOwnerThread(Thread.currentThread());
-            else
+            else{
+                // 获取锁失败，就和公平锁一样，调用 acquire 方法来获取锁
                 acquire(1);
+            }
         }
 
         protected final boolean tryAcquire(int acquires) {
