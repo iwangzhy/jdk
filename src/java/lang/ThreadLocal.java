@@ -160,8 +160,10 @@ public class ThreadLocal<T> {
      */
     public T get() {
         Thread t = Thread.currentThread();
+        // 获取 Thread 类的 threadLocals 成员变量
         ThreadLocalMap map = getMap(t);
         if (map != null) {
+            // ThreadLocalMap 已经被初始化，就以 ThreadLocal 对象为 key ，去 Thread.threadLocals 中查找
             ThreadLocalMap.Entry e = map.getEntry(this);
             if (e != null) {
                 @SuppressWarnings("unchecked")
@@ -192,12 +194,15 @@ public class ThreadLocal<T> {
      * @return the initial value
      */
     private T setInitialValue() {
+        // 在创建 ThreadLocal 的时候可以重写 initialValue 方法，来给 ThreadLocal 存储的变量一个默认值
         T value = initialValue();
         Thread t = Thread.currentThread();
         ThreadLocalMap map = getMap(t);
+        // Thread.threadLocals 已经被初始化了
         if (map != null) {
             map.set(this, value);
         } else {
+            // Thread.threadLocals 未被初始化，就先初始化
             createMap(t, value);
         }
         if (this instanceof TerminatingThreadLocal) {
@@ -344,6 +349,8 @@ public class ThreadLocal<T> {
         /**
          * The table, resized as necessary.
          * table.length MUST always be a power of two.
+         *
+         * ThreadLocalMap 的底层是一个 Entry 数组。
          */
         private Entry[] table;
 
@@ -432,11 +439,13 @@ public class ThreadLocal<T> {
          * @return the entry associated with key, or null if no such
          */
         private Entry getEntry(ThreadLocal<?> key) {
+            // 计算下表
             int i = key.threadLocalHashCode & (table.length - 1);
             Entry e = table[i];
             if (e != null && e.get() == key)
                 return e;
             else
+                // 向后查找
                 return getEntryAfterMiss(key, i, e);
         }
 
@@ -481,27 +490,32 @@ public class ThreadLocal<T> {
 
             Entry[] tab = table;
             int len = tab.length;
+            // 计算当前 ThreadLocal 在 ThreadLocalMap.table 数组中的下表
             int i = key.threadLocalHashCode & (len-1);
 
             for (Entry e = tab[i];
                  e != null;
+                 // 下表为 i 的元素不为空，且不等于传进来的 ThreadLocal，需要重新计算 i
                  e = tab[i = nextIndex(i, len)]) {
                 ThreadLocal<?> k = e.get();
-
+                // table 中下表为 i 的元素，就是当前要设置的 ThreadLocal
                 if (k == key) {
                     e.value = value;
                     return;
                 }
 
+                // table 中下表为 i 的元素为空（未设置，或已被回收）
                 if (k == null) {
+                    // 将 ThreadLocal 和 Obejct 封装成一个 Entry ，放到下标为 i 的位置。
                     replaceStaleEntry(key, value, i);
                     return;
                 }
             }
-
+            // 找了一圈还是未找到，直接替换 table 中，下表为 i 的元素
             tab[i] = new Entry(key, value);
             int sz = ++size;
             if (!cleanSomeSlots(i, sz) && sz >= threshold)
+                // 扩容
                 rehash();
         }
 

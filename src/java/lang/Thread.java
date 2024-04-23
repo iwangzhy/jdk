@@ -180,7 +180,9 @@ class Thread implements Runnable {
     }
 
     /* ThreadLocal values pertaining to this thread. This map is maintained
-     * by the ThreadLocal class. */
+     * by the ThreadLocal class.
+     * ThreadLocal 的核心。
+     */
     ThreadLocal.ThreadLocalMap threadLocals = null;
 
     /*
