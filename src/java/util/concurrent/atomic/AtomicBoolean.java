@@ -44,6 +44,13 @@ import sun.misc.Unsafe;
  * updated flags, and cannot be used as a replacement for a
  * {@link java.lang.Boolean}.
  *
+ * boolean 只有两个类型的值，为什么还需要原子操作呢？
+ *
+ * 因为有时需要下面的代码是一个原子性的。
+ * if(flag == false){
+ *     flag = true;
+ * }
+ *
  * @since 1.5
  * @author Doug Lea
  */

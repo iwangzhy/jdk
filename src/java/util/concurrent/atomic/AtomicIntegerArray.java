@@ -43,6 +43,9 @@ import sun.misc.Unsafe;
  * See the {@link java.util.concurrent.atomic} package
  * specification for description of the properties of atomic
  * variables.
+ *
+ * 对数组中的某个元素的操作是原子性的。
+ *
  * @since 1.5
  * @author Doug Lea
  */
@@ -50,6 +53,7 @@ public class AtomicIntegerArray implements java.io.Serializable {
     private static final long serialVersionUID = 2862133569453604235L;
 
     private static final Unsafe unsafe = Unsafe.getUnsafe();
+    // 数组首地址的位置
     private static final int base = unsafe.arrayBaseOffset(int[].class);
     private static final int shift;
     private final int[] array;
@@ -58,6 +62,7 @@ public class AtomicIntegerArray implements java.io.Serializable {
         int scale = unsafe.arrayIndexScale(int[].class);
         if ((scale & (scale - 1)) != 0)
             throw new Error("data type scale not a power of two");
+        // 数组一个元素的大小
         shift = 31 - Integer.numberOfLeadingZeros(scale);
     }
 
@@ -68,7 +73,11 @@ public class AtomicIntegerArray implements java.io.Serializable {
         return byteOffset(i);
     }
 
+    // 把下标 i 转换成对应的内存地址。
     private static long byteOffset(int i) {
+        // base：数组的首地址的位置
+        // shift：数组一个元素的大小
+        // i * scale + base
         return ((long) i << shift) + base;
     }
 

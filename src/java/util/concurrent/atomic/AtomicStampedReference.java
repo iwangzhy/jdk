@@ -43,6 +43,8 @@ package java.util.concurrent.atomic;
  * references by creating internal objects representing "boxed"
  * [reference, integer] pairs.
  *
+ * 用于同时比较 "值" 和 "版本号"
+ *
  * @since 1.5
  * @author Doug Lea
  * @param <V> The type of object referred to by this reference
@@ -148,10 +150,13 @@ public class AtomicStampedReference<V> {
                                  int newStamp) {
         Pair<V> current = pair;
         return
+            // 期望的值和当前的值相等
             expectedReference == current.reference &&
+            // 期望的版本号和当前的版本号相等
             expectedStamp == current.stamp &&
             ((newReference == current.reference &&
               newStamp == current.stamp) ||
+            // cas操作
              casPair(current, Pair.of(newReference, newStamp)));
     }
 

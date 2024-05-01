@@ -880,6 +880,13 @@ public final class Unsafe {
     /**
      * Atomically update Java variable to <tt>x</tt> if it is currently
      * holding <tt>expected</tt>.
+     *
+     * 如果对象 o 的 指定字段（offset）的值是 expected ，则将其设置为 x。
+     *
+     * offset 通过 valueOffset = unsafe.objectFieldOffset
+     *                 (AtomicInteger.class.getDeclaredField("value"));  获取。
+     *
+     * @param  offset 某个成员变量在对应类中的内存偏移量。
      * @return <tt>true</tt> if successful
      */
     public final native boolean compareAndSwapInt(Object o, long offset,

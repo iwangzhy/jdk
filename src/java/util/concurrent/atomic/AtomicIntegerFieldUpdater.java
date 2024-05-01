@@ -90,6 +90,10 @@ public abstract class AtomicIntegerFieldUpdater<T> {
 
     /**
      * Protected do-nothing constructor for use by subclasses.
+     *
+     * 构造方法是 protected 的，不允许被直接实例化。
+     *
+     * 有提供 newUpdater 方法来创建实例。
      */
     protected AtomicIntegerFieldUpdater() {
     }
@@ -404,7 +408,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-
+            // 成员变量必须是 volatile 修饰的 int 类型。 Integer 不行。
             if (field.getType() != int.class)
                 throw new IllegalArgumentException("Must be integer type");
 
@@ -460,6 +464,8 @@ public abstract class AtomicIntegerFieldUpdater<T> {
         /**
          * Checks that target argument is instance of cclass.  On
          * failure, throws cause.
+         *
+         * 检查 obj 是否为目标类的实例对象。
          */
         private final void accessCheck(T obj) {
             if (!cclass.isInstance(obj))
