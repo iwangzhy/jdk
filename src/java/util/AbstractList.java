@@ -381,6 +381,10 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             }
         }
 
+        /**
+         * 检查 List 的 modCount 是否与创建迭代器时的一致。
+         * 不一致会抛出 ConcurrentModificationException 异常。
+         */
         final void checkForComodification() {
             if (modCount != expectedModCount)
                 throw new ConcurrentModificationException();
@@ -597,6 +601,13 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * bogus {@code ConcurrentModificationExceptions}.  If an implementation
      * does not wish to provide fail-fast iterators, this field may be
      * ignored.
+     *
+     * modCount 用于记录 List 中结构被修改的次数。
+     * 作用：
+     * 1. 用于记录 List 中结构被修改的次数。
+     * 2. 快速失败，Iterator 和 ListIterator 的一个特性，当使用迭代器遍历一个 list 时，如果列表的结构被修改了，
+     * 迭代器就会感知到修改，并抛出 ConcurrentModificationException 异常。
+     * 3.
      */
     protected transient int modCount = 0;
 

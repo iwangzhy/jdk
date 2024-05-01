@@ -73,6 +73,8 @@ import java.util.function.Consumer;
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
  * Java Collections Framework</a>.
  *
+ * LinkedList 底层是一个双向链表。
+ *
  * @author  Josh Bloch
  * @see     List
  * @see     ArrayList
@@ -91,14 +93,14 @@ public class LinkedList<E>
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
-    transient Node<E> first;
+    transient Node<E> first; // 第一个节点
 
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
      *            (last.next == null && last.item != null)
      */
-    transient Node<E> last;
+    transient Node<E> last; // 尾节点
 
     /**
      * Constructs an empty list.
@@ -550,11 +552,19 @@ public class LinkedList<E>
         return "Index: "+index+", Size: "+size;
     }
 
+    /**
+     * 检查所有是否越界
+     * @param index
+     */
     private void checkElementIndex(int index) {
         if (!isElementIndex(index))
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
 
+    /**
+     * 检查所有是否越界
+     * @param index
+     */
     private void checkPositionIndex(int index) {
         if (!isPositionIndex(index))
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
