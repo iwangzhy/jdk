@@ -233,6 +233,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * The default initial capacity - MUST be a power of two.
+     *
+     * 默认数组大小
      */
     static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
 
@@ -245,6 +247,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * The load factor used when none specified in constructor.
+     *
+     * 默认负载因子
      */
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
@@ -255,6 +259,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * than 2 and should be at least 8 to mesh with assumptions in
      * tree removal about conversion back to plain bins upon
      * shrinkage.
+     *
+     * 树化阈值
      */
     static final int TREEIFY_THRESHOLD = 8;
 
@@ -262,6 +268,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * The bin count threshold for untreeifying a (split) bin during a
      * resize operation. Should be less than TREEIFY_THRESHOLD, and at
      * most 6 to mesh with shrinkage detection under removal.
+     *
+     * 树退化成链表的阈值
      */
     static final int UNTREEIFY_THRESHOLD = 6;
 
@@ -270,12 +278,17 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * (Otherwise the table is resized if too many nodes in a bin.)
      * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts
      * between resizing and treeification thresholds.
+     *
+     * HashMap 的元素个数大于这个值时，才会允许将链表转换为红黑树。
+     * 要想转成红黑树还需要链表的长度大于 8 。
      */
     static final int MIN_TREEIFY_CAPACITY = 64;
 
     /**
      * Basic hash bin node, used for most entries.  (See below for
      * TreeNode subclass, and in LinkedHashMap for its Entry subclass.)
+     *
+     * 数组元素节点。
      */
     static class Node<K,V> implements Map.Entry<K,V> {
         final int hash;
@@ -375,6 +388,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * Returns a power of two size for the given target capacity.
+     *
+     * 返回大于等于 cap 的最小的 2 的幂次方数。
      */
     static final int tableSizeFor(int cap) {
         int n = cap - 1;
@@ -393,17 +408,25 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * necessary. When allocated, length is always a power of two.
      * (We also tolerate length zero in some operations to allow
      * bootstrapping mechanics that are currently not needed.)
+     *
+     * hashMap 底层数据结构，数组 + 链表 + 红黑树
+     *
+     * 在 resize 的时候初始化的。
      */
     transient Node<K,V>[] table;
 
     /**
      * Holds cached entrySet(). Note that AbstractMap fields are used
      * for keySet() and values().
+     *
+     * 调用 entrySet() 方法时，会将结果缓存到这个字段中。
      */
     transient Set<Map.Entry<K,V>> entrySet;
 
     /**
      * The number of key-value mappings contained in this map.
+     *
+     * 元素个数
      */
     transient int size;
 
@@ -413,12 +436,16 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * the HashMap or otherwise modify its internal structure (e.g.,
      * rehash).  This field is used to make iterators on Collection-views of
      * the HashMap fail-fast.  (See ConcurrentModificationException).
+     *
+     * 结构修改次数
+     *
+     * 用于迭代器快速失败。
      */
     transient int modCount;
 
     /**
      * The next size value at which to resize (capacity * load factor).
-     *
+     * 扩容阈值：数组长度 * 负载因子
      * @serial
      */
     // (The javadoc description is true upon serialization.
@@ -429,7 +456,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
     /**
      * The load factor for the hash table.
-     *
+     * 负载因子
      * @serial
      */
     final float loadFactor;
@@ -455,6 +482,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             throw new IllegalArgumentException("Illegal load factor: " +
                                                loadFactor);
         this.loadFactor = loadFactor;
+        // 扩容阈值  2 的 n 次方
         this.threshold = tableSizeFor(initialCapacity);
     }
 
